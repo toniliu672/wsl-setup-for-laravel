@@ -18,11 +18,12 @@ sudo apt install curl wget unzip git -y
 sudo add-apt-repository ppa:ondrej/php -y
 sudo apt update
 
-# Install PHP 8.4 with extensions
-sudo apt install php8.4 php8.4-cli php8.4-common php8.4-mysql php8.4-zip php8.4-gd php8.4-mbstring php8.4-curl php8.4-xml php8.4-bcmath php8.4-tokenizer php8.4-ctype php8.4-fileinfo php8.4-intl libapache2-mod-php8.4 -y
+# Install PHP 8.4 with all required extensions
+sudo apt install php8.4 php8.4-cli php8.4-common php8.4-mysql php8.4-zip php8.4-gd php8.4-mbstring php8.4-curl php8.4-xml php8.4-bcmath php8.4-tokenizer php8.4-ctype php8.4-fileinfo php8.4-intl php8.4-bz2 php8.4-calendar php8.4-exif php8.4-ftp php8.4-gettext php8.4-iconv php8.4-mysqli php8.4-pdo php8.4-phar php8.4-posix php8.4-readline php8.4-shmop php8.4-sockets php8.4-sysvmsg php8.4-sysvsem php8.4-sysvshm libapache2-mod-php8.4 -y
 
-# Verify PHP version
+# Verify PHP version and extensions
 php -v
+php -m | grep -E "(xml|mysql|zip|gd|mbstring|curl)"
 ```
 
 ## 3. MySQL Installation & Configuration
@@ -185,7 +186,7 @@ EXIT;
 php artisan migrate
 
 # Start development server
-php artisan serve --host=0.0.0.0 --port=8000
+php artisan serve --port=8000
 ```
 
 ## 11. Multiple Branch Development
@@ -230,7 +231,41 @@ sudo systemctl status mysql
 - **phpMyAdmin:** http://localhost/phpmyadmin
 - **Apache Default:** http://localhost
 
-## 14. Useful Commands
+## 14. Tips & Tricks
+
+### Tab Completion untuk Navigasi Cepat:
+```bash
+# Navigasi ke direktori dengan tab completion
+cd ~/proj<TAB>  # Auto-complete ke ~/projects/
+cd ~/projects/sim<TAB>  # Auto-complete ke nama repository
+
+# Wildcard navigation
+cd ~/projects/*laravel*  # Masuk ke folder yang mengandung "laravel"
+cd ~/projects/sim*       # Masuk ke folder yang dimulai "sim"
+
+# Recent directory navigation
+cd -  # Kembali ke direktori sebelumnya
+dirs -v  # Lihat history direktori
+```
+
+### Git Branch Management:
+```bash
+# Quick branch switching dengan tab completion
+git checkout dev<TAB>
+git checkout main<TAB>
+
+# View all branches
+git branch -a
+```
+
+### Laravel Artisan Shortcuts:
+```bash
+# Tab completion untuk artisan commands
+php artisan mig<TAB>  # Auto-complete ke migrate
+php artisan make:mod<TAB>  # Auto-complete ke make:model
+```
+
+## 15. Useful Commands
 
 ```bash
 # PHP version check
@@ -248,7 +283,7 @@ sudo systemctl status apache2
 # Laravel commands
 php artisan migrate
 php artisan migrate:refresh
-php artisan serve --host=0.0.0.0 --port=8000
+php artisan serve --port=8000
 
 # Git branch management
 git branch -a
@@ -256,12 +291,28 @@ git checkout branch-name
 git pull origin branch-name
 ```
 
-## 15. Troubleshooting
+## 16. Troubleshooting
 
 ### PHP Extension Issues:
 ```bash
+# Install missing PHP extensions
 sudo apt install php8.4-extension-name
 sudo systemctl restart apache2
+
+# Check which extensions are loaded
+php -m
+
+# Check PHP configuration files
+php --ini
+
+# Fix common Composer extension errors
+sudo apt install php8.4-xml php8.4-dom php8.4-simplexml php8.4-xmlwriter php8.4-xmlreader
+
+# If getting platform requirements error, install all common extensions:
+sudo apt install php8.4-bz2 php8.4-calendar php8.4-exif php8.4-ftp php8.4-gettext php8.4-iconv php8.4-mysqli php8.4-pdo php8.4-phar php8.4-posix php8.4-readline php8.4-shmop php8.4-sockets php8.4-sysvmsg php8.4-sysvsem php8.4-sysvshm
+
+# Temporary workaround for platform requirements
+composer install --ignore-platform-req=ext-xml
 ```
 
 ### Permission Issues:
@@ -289,8 +340,9 @@ sudo apache2ctl configtest
 
 ## Notes
 
-- Always use `--host=0.0.0.0` when running Laravel server to access from Windows browser
-- WSL2 automatically forwards ports to Windows
+- WSL2 automatically forwards ports to Windows (no need for --host=0.0.0.0)
 - Use `~/projects` directory for all development projects
 - SSH keys are user-specific, generate for each user
 - phpMyAdmin requires proper PHP extensions to function
+- Use Tab completion for faster navigation: `cd ~/proj<TAB>`
+- If getting PHP extension errors, install all required extensions with the commands in troubleshooting section
